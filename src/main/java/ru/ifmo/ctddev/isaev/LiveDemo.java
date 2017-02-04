@@ -45,9 +45,9 @@ public class LiveDemo extends JFrame {
         List<Point> points = IntStream.range(0, POINTS_NUMBER)
                 .mapToObj(i -> new Point(random.nextInt(screenWidth), random.nextInt(screenHeight)))
                 .collect(Collectors.toList());
-        Set<Point> xSet = new TreeSet<>(Comparator.comparingInt(point->point.x));
+        Set<Point> xSet = new TreeSet<>(Comparator.comparingInt(point -> point.x));
         xSet.addAll(points);
-        Set<Point> ySet = new TreeSet<>(Comparator.comparingInt(point->point.y));
+        Set<Point> ySet = new TreeSet<>(Comparator.comparingInt(point -> point.y));
         ySet.addAll(xSet);
         redPoints = new ArrayList<>(ySet);
         rangeSearch = new RangeTreeSearch(redPoints);
@@ -87,17 +87,23 @@ public class LiveDemo extends JFrame {
             public void mousePressed(MouseEvent evt) {
                 startDrag[0] = null;
                 endDrag[0] = null;
+                bluePoints.clear();
                 repaint();
                 startDrag[0] = new Point(evt.getX(), evt.getY());
                 endDrag[0] = startDrag[0];
+                repaint();
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                bluePoints.clear();
+                bluePoints.addAll(rangeSearch.query(startDrag[0], endDrag[0]));
                 repaint();
             }
         });
         mainPanel.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent evt) {
                 endDrag[0] = new Point(evt.getX(), evt.getY());
-                bluePoints.clear();
-                bluePoints.addAll(rangeSearch.query(startDrag[0], endDrag[0]));
                 repaint();
             }
         });

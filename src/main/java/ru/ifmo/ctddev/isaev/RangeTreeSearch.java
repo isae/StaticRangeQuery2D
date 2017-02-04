@@ -70,12 +70,91 @@ public class RangeTreeSearch extends RangeSearch {
         return res == leftSortedByY.size() ? null : res;
     }
 
+    private Integer getAssocIndex(List<AssocPoint> leftSortedByY, AssocPoint point) {
+        int pos = Collections.binarySearch(leftSortedByY, point, ASSOC_BY_Y);
+        int res = pos >= 0 ? pos : -pos - 1;
+        return res == leftSortedByY.size() ? null : res;
+    }
+
     @Override
     public List<Point> query(Point topLeft, Point bottomRight) {
+        if (topLeft.x > bottomRight.x) {
+            Point temp = topLeft;
+            topLeft = bottomRight;
+            bottomRight = temp;
+        }
         int fromX = topLeft.x;
-        int toX = bottomRight.y;
-        int fromY = topLeft.y;
-        int toY = bottomRight.y;
-        throw new UnsupportedOperationException("Method is not implemented");
+        int toX = bottomRight.x;
+        int fromY = bottomRight.y;
+        int toY = topLeft.y;
+        Node vSplit = findSplitNode(fromX, toX, tree);
+        Integer yStartIndex = getAssocIndex(vSplit.getAssoc(), new AssocPoint(new Point(-1, fromY), null, null));
+        if (vSplit.isLeaf() && yStartIndex != null) {
+            return singletonList(vSplit.getAssoc().get(0).getPoint());
+        }
+
+        AssocPoint parentPoint = vSplit.getAssoc().get(yStartIndex);
+        List<Pair<List<AssocPoint>, Integer>> subtrees = new ArrayList<>();
+        traverseToLeft(vSplit.getLeft(), fromX, parentPoint.getLeftIndex(), subtrees);
+        traverseToRight(vSplit.getRight(), toX, parentPoint.getRightIndex(), subtrees);
+        List<Point> result = new ArrayList<>();
+        subtrees.forEach(pair -> {
+            List<AssocPoint> list = pair.getFirst();
+            Integer firstIndex = pair.getSecond();
+            if (firstIndex != null) {
+                Point point = list.get(firstIndex).getPoint();
+                while (point.y <= toY) {
+                    result.add(point);
+                }
+            }
+        });
+        return result;
+    }
+
+    private void traverseToRight(Node node, int toX, Integer assocIndex, List<Pair<List<AssocPoint>, Integer>> subtrees) {
+        if (node == null) {
+            return;
+        }
+        if (node.isLeaf() && toX >= node.getxCoord()) {
+            subtrees.add(new Pair<>(node.getAssoc(), assocIndex));
+            return;
+        }
+        AssocPoint currentPoint = node.getAssoc().get(assocIndex);
+        if (toX > node.getxCoord()) {
+            subtrees.add(new Pair<>(node.getLeft().getAssoc(), currentPoint.getLeftIndex()));
+            traverseToRight(node.getRight(), toX, currentPoint.getRightIndex(), subtrees);
+        } else {
+            traverseToRight(node.getLeft(), toX, currentPoint.getLeftIndex(), subtrees);
+        }
+    }
+
+    private void traverseToLeft(Node node, int fromX, Integer assocIndex, List<Pair<List<AssocPoint>, Integer>> subtrees) {
+        if (node == null) {
+            return;
+        }
+        if (node.isLeaf()) {
+            if (fromX <= node.getxCoord()) {
+                subtrees.add(new Pair<>(node.getAssoc(), assocIndex));
+            }
+            return;
+        }
+        AssocPoint currentPoint = node.getAssoc().get(assocIndex);
+        if (fromX <= node.getxCoord()) {
+            subtrees.add(new Pair<>(node.getRight().getAssoc(), currentPoint.getRightIndex()));
+            traverseToLeft(node.getLeft(), fromX, currentPoint.getLeftIndex(), subtrees);
+        } else {
+            traverseToLeft(node.getRight(), fromX, currentPoint.getRightIndex(), subtrees);
+        }
+    }
+
+    private Node findSplitNode(int fromX, int toX, Node tree) {
+        if (fromX <= tree.getxCoord() && toX > tree.getxCoord()) {
+            return tree;
+        }
+        if (toX <= tree.getxCoord()) {
+            return findSplitNode(fromX, toX, tree.getLeft());
+        } else {
+            return findSplitNode(fromX, toX, tree.getRight());
+        }
     }
 }
