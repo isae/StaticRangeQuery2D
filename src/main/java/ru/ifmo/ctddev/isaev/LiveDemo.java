@@ -6,9 +6,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -17,7 +16,7 @@ public class LiveDemo extends JFrame {
 
     private static final int POINT_SIZE = 5;
 
-    private static final int POINTS_NUMBER = 500;
+    private static final int POINTS_NUMBER = 30;
 
     private static final Random random = new Random();
 
@@ -43,10 +42,15 @@ public class LiveDemo extends JFrame {
 
     public LiveDemo() {
         initComponents();
-        redPoints = IntStream.range(0, POINTS_NUMBER)
+        List<Point> points = IntStream.range(0, POINTS_NUMBER)
                 .mapToObj(i -> new Point(random.nextInt(screenWidth), random.nextInt(screenHeight)))
                 .collect(Collectors.toList());
-        rangeSearch = new NaiveRangeSearch(redPoints);
+        Set<Point> xSet = new TreeSet<>(Comparator.comparingInt(point->point.x));
+        xSet.addAll(points);
+        Set<Point> ySet = new TreeSet<>(Comparator.comparingInt(point->point.y));
+        ySet.addAll(xSet);
+        redPoints = new ArrayList<>(ySet);
+        rangeSearch = new RangeTreeSearch(redPoints);
     }
 
     void drawPoint(Graphics g, Point p, Color color) {

@@ -8,34 +8,27 @@ import java.util.List;
  * @author iisaev
  */
 public class Node {
-    private Node left;
+    private final Node left;
 
-    private Node right;
+    private final Node right;
 
     private final int xCoord;
 
     private List<AssocPoint> assoc = new ArrayList<>();
 
-    public Node(Node left, Node right, int xCoord) {
+    public Node(Node left, Node right, int xCoord, List<AssocPoint> assoc) {
         this.left = left;
         this.right = right;
         this.xCoord = xCoord;
+        this.assoc = assoc;
     }
 
     public Node getLeft() {
         return left;
     }
 
-    public void setLeft(Node left) {
-        this.left = left;
-    }
-
     public Node getRight() {
         return right;
-    }
-
-    public void setRight(Node right) {
-        this.right = right;
     }
 
     public boolean isLeaf() {

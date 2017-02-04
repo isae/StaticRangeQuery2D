@@ -1,6 +1,6 @@
 package ru.ifmo.ctddev.isaev;
 
-import java.awt.Point;
+import java.awt.*;
 
 
 /**
@@ -8,18 +8,26 @@ import java.awt.Point;
  */
 public class AssocPoint {
     private final Point point;
-    private final int subListIndex;
 
-    public AssocPoint(Point point, int subListIndex) {
+    private final Integer leftIndex;
+
+    private final Integer rightIndex;
+
+    public AssocPoint(Point point, Integer leftIndex, Integer rightIndex) {
         this.point = point;
-        this.subListIndex = subListIndex;
+        this.leftIndex = leftIndex;
+        this.rightIndex = rightIndex;
     }
 
     public Point getPoint() {
         return point;
     }
 
-    public int getSubListIndex() {
-        return subListIndex;
+    public Integer getLeftIndex() {
+        return leftIndex;
+    }
+
+    public Integer getRightIndex() {
+        return rightIndex;
     }
 }
