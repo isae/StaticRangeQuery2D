@@ -21,7 +21,7 @@ public class LiveDemo extends JFrame {
 
     private static final int POINT_SIZE = 5;
 
-    private static final int POINTS_NUMBER = 50000;
+    private static int numberOfPoints = 50000;
 
     private static final Random random = new Random();
 
@@ -46,7 +46,7 @@ public class LiveDemo extends JFrame {
     }
 
     private void generatePoints() {
-        List<Point> points = IntStream.range(0, POINTS_NUMBER)
+        List<Point> points = IntStream.range(0, numberOfPoints)
                 .mapToObj(i -> new Point(random.nextInt(screenWidth), random.nextInt(screenHeight)))
                 .collect(Collectors.toList());
         redPoints.clear();
@@ -137,6 +137,9 @@ public class LiveDemo extends JFrame {
 
     //set ui visible//
     public static void main(String args[]) {
+        if (args.length > 0) {
+            numberOfPoints = Integer.parseInt(args[0]);
+        }
         java.awt.EventQueue.invokeLater(() -> {
 
             LiveDemo liveDemo = new LiveDemo();
