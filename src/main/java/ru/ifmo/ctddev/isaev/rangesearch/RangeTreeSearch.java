@@ -1,4 +1,9 @@
-package ru.ifmo.ctddev.isaev;
+package ru.ifmo.ctddev.isaev.rangesearch;
+
+import ru.ifmo.ctddev.isaev.rangesearch.node.AssocPoint;
+import ru.ifmo.ctddev.isaev.rangesearch.node.Leaf;
+import ru.ifmo.ctddev.isaev.rangesearch.node.Node;
+import ru.ifmo.ctddev.isaev.rangesearch.node.Pair;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -6,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
-import static ru.ifmo.ctddev.isaev.PointComparators.*;
+import static ru.ifmo.ctddev.isaev.util.PointComparators.*;
 
 
 /**
@@ -15,7 +20,7 @@ import static ru.ifmo.ctddev.isaev.PointComparators.*;
 public class RangeTreeSearch extends RangeSearch {
     private Node tree;
 
-    protected RangeTreeSearch(List<Point> points) {
+    public RangeTreeSearch(List<Point> points) {
         super(points);
         points.sort(BY_X);
         tree = buildNode(points);
@@ -77,16 +82,11 @@ public class RangeTreeSearch extends RangeSearch {
     }
 
     @Override
-    public List<Point> query(Point topLeft, Point bottomRight) {
-        if (topLeft.x > bottomRight.x) {
-            Point temp = topLeft;
-            topLeft = bottomRight;
-            bottomRight = temp;
-        }
-        int fromX = topLeft.x;
-        int toX = bottomRight.x;
-        int fromY = bottomRight.y;
-        int toY = topLeft.y;
+    public List<Point> query(Point point1, Point point2) {
+        int fromX = Math.min(point1.x, point2.x);
+        int toX = Math.max(point1.x, point2.x);
+        int fromY = Math.min(point1.y, point2.y);
+        int toY = Math.max(point1.y, point2.y);
         Node vSplit = findSplitNode(fromX, toX, tree);
         Integer yStartIndex = getAssocIndex(vSplit.getAssoc(), new AssocPoint(new Point(-1, fromY), null, null));
         if (vSplit.isLeaf() && yStartIndex != null) {
@@ -115,6 +115,9 @@ public class RangeTreeSearch extends RangeSearch {
         if (node == null) {
             return;
         }
+        if (assocIndex == null) {
+            return;
+        }
         if (node.isLeaf() && toX >= node.getxCoord()) {
             subtrees.add(new Pair<>(node.getAssoc(), assocIndex));
             return;
@@ -130,6 +133,9 @@ public class RangeTreeSearch extends RangeSearch {
 
     private void traverseToLeft(Node node, int fromX, Integer assocIndex, List<Pair<List<AssocPoint>, Integer>> subtrees) {
         if (node == null) {
+            return;
+        }
+        if (assocIndex == null) {
             return;
         }
         if (node.isLeaf()) {

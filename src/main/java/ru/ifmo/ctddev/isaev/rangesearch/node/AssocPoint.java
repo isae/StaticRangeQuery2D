@@ -1,4 +1,4 @@
-package ru.ifmo.ctddev.isaev;
+package ru.ifmo.ctddev.isaev.rangesearch.node;
 
 import java.awt.*;
 
@@ -29,5 +29,10 @@ public class AssocPoint {
 
     public Integer getRightIndex() {
         return rightIndex;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[%s/%s],%s,%s", point.x, point.y, leftIndex, rightIndex);
     }
 }

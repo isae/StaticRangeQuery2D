@@ -1,4 +1,4 @@
-package ru.ifmo.ctddev.isaev;
+package ru.ifmo.ctddev.isaev.rangesearch.node;
 
 import java.util.ArrayList;
 import java.util.List;

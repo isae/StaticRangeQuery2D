@@ -1,4 +1,4 @@
-package ru.ifmo.ctddev.isaev;
+package ru.ifmo.ctddev.isaev.rangesearch.node;
 
 /**
  * @author iisaev

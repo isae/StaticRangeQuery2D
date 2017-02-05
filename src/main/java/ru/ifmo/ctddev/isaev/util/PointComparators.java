@@ -1,4 +1,6 @@
-package ru.ifmo.ctddev.isaev;
+package ru.ifmo.ctddev.isaev.util;
+
+import ru.ifmo.ctddev.isaev.rangesearch.node.AssocPoint;
 
 import java.awt.*;
 import java.util.Comparator;

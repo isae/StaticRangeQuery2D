@@ -1,5 +1,8 @@
 package ru.ifmo.ctddev.isaev;
 
+import ru.ifmo.ctddev.isaev.rangesearch.NaiveRangeSearch;
+import ru.ifmo.ctddev.isaev.rangesearch.RangeSearch;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -28,11 +31,11 @@ public class LiveDemo extends JFrame {
 
     private final Point[] endDrag = new Point[1];
 
-    private final List<Point> redPoints;
+    private final List<Point> redPoints = new ArrayList<>();
 
     private final List<Point> bluePoints = new ArrayList<>();
 
-    private final RangeSearch rangeSearch;
+    private RangeSearch rangeSearch;
 
     static {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -40,8 +43,7 @@ public class LiveDemo extends JFrame {
         screenHeight = (int) screenSize.getHeight();
     }
 
-    public LiveDemo() {
-        initComponents();
+    private void generatePoints() {
         List<Point> points = IntStream.range(0, POINTS_NUMBER)
                 .mapToObj(i -> new Point(random.nextInt(screenWidth), random.nextInt(screenHeight)))
                 .collect(Collectors.toList());
@@ -49,15 +51,29 @@ public class LiveDemo extends JFrame {
         xSet.addAll(points);
         Set<Point> ySet = new TreeSet<>(Comparator.comparingInt(point -> point.y));
         ySet.addAll(xSet);
-        redPoints = new ArrayList<>(ySet);
-        rangeSearch = new RangeTreeSearch(redPoints);
+        redPoints.clear();
+        redPoints.addAll(ySet);
+        rangeSearch = new NaiveRangeSearch(redPoints);
+    }
+
+    public LiveDemo() {
+        initComponents();
+        generatePoints();
     }
 
     void drawPoint(Graphics g, Point p, Color color) {
+        Graphics pointEnclosure = g.create(
+                p.x - 3 * POINT_SIZE,
+                p.y - 3 * POINT_SIZE,
+                POINT_SIZE * 7,
+                POINT_SIZE * 7);
+        pointEnclosure.setColor(Color.BLACK);
+        pointEnclosure.setFont(new Font("Arial", Font.PLAIN, 8));
         Graphics point = g.create(p.x, p.y, POINT_SIZE, POINT_SIZE);
         point.drawOval(0, 0, POINT_SIZE, POINT_SIZE);
         point.setColor(color);
         point.fillOval(0, 0, POINT_SIZE, POINT_SIZE);
+        pointEnclosure.drawString(String.format("%s/%s", p.x, p.y), 0, POINT_SIZE * 5 / 2);
     }
 
     private Rectangle2D.Float makeRectangle(int x1, int y1, int x2, int y2) {
@@ -79,6 +95,12 @@ public class LiveDemo extends JFrame {
                 }
             }
         };
+        JButton generateButton = new JButton("Refresh");
+        generateButton.addActionListener(e -> {
+            generatePoints();
+            repaint();
+        });
+        mainPanel.add(generateButton);
         this.add(mainPanel);
 
         mainPanel.setBackground(new java.awt.Color(255, 255, 255));
