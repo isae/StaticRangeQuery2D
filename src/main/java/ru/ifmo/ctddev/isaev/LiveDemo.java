@@ -52,6 +52,7 @@ public class LiveDemo extends JFrame {
         Set<Point> ySet = new TreeSet<>(Comparator.comparingInt(point -> point.y));
         ySet.addAll(xSet);
         redPoints.clear();
+        bluePoints.clear();
         redPoints.addAll(ySet);
         rangeSearch = new RangeTreeSearch(redPoints);
     }

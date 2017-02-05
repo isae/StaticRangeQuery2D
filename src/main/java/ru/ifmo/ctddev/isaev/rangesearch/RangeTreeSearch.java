@@ -29,15 +29,8 @@ public class RangeTreeSearch extends RangeSearch {
     }
 
     private Node buildNode(List<Point> points) {
-        if (points.size() > 2) {
+        if (points.size() > 1) {
             return buildComplexNode(points);
-        } else if (points.size() == 2) {
-            Point childPoint = points.get(0);
-            Point parentPoint = points.get(1);
-            Leaf child = new Leaf(childPoint);
-            return new Node(child, null, parentPoint.x,
-                    singletonList(new AssocPoint(parentPoint, 0, -1))
-            );
         } else {
             return new Leaf(points.get(0));
         }
@@ -48,13 +41,14 @@ public class RangeTreeSearch extends RangeSearch {
         sortedByY.sort(BY_Y);
 
         int medianIndex = points.size() / 2;
+        int leftSize = medianIndex + points.size() % 2;
         Point median = points.get(medianIndex);
-        List<Point> leftList = points.subList(0, medianIndex + 1);
+        List<Point> leftList = points.subList(0, leftSize);
         List<Point> leftSortedByY = new ArrayList<>(leftList);
         leftSortedByY.sort(BY_Y);
         Node left = buildNode(leftList);
 
-        List<Point> rightList = points.subList(medianIndex + 1, points.size());
+        List<Point> rightList = points.subList(leftSize, points.size());
         List<Point> rightSortedByY = new ArrayList<>(rightList);
         rightSortedByY.sort(BY_Y);
         Node right = buildNode(rightList);
@@ -67,6 +61,11 @@ public class RangeTreeSearch extends RangeSearch {
         });
 
         assoc.sort(ASSOC_BY_Y);
+        if (left.getAssoc().size() + right.getAssoc().size() != assoc.size()) {
+            boolean f = true;
+            throw new IllegalStateException();
+        }
+
         return new Node(left, right, median.x, assoc);
     }
 
