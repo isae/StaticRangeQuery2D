@@ -1,7 +1,7 @@
 package ru.ifmo.ctddev.isaev;
 
-import ru.ifmo.ctddev.isaev.rangesearch.NaiveRangeSearch;
 import ru.ifmo.ctddev.isaev.rangesearch.RangeSearch;
+import ru.ifmo.ctddev.isaev.rangesearch.RangeTreeSearch;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,7 +53,7 @@ public class LiveDemo extends JFrame {
         ySet.addAll(xSet);
         redPoints.clear();
         redPoints.addAll(ySet);
-        rangeSearch = new NaiveRangeSearch(redPoints);
+        rangeSearch = new RangeTreeSearch(redPoints);
     }
 
     public LiveDemo() {
@@ -117,9 +117,13 @@ public class LiveDemo extends JFrame {
             }
 
             @Override
-            public void mouseReleased(MouseEvent e) {
+            public void mouseReleased(MouseEvent evt) {
                 bluePoints.clear();
-                bluePoints.addAll(rangeSearch.query(startDrag[0], endDrag[0]));
+                try {
+                    bluePoints.addAll(rangeSearch.query(startDrag[0], endDrag[0]));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 repaint();
             }
         });

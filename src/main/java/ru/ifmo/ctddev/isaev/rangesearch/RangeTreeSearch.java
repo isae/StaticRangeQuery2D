@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static ru.ifmo.ctddev.isaev.util.PointComparators.*;
 
@@ -48,7 +49,7 @@ public class RangeTreeSearch extends RangeSearch {
 
         int medianIndex = points.size() / 2;
         Point median = points.get(medianIndex);
-        List<Point> leftList = points.subList(0, medianIndex);
+        List<Point> leftList = points.subList(0, medianIndex + 1);
         List<Point> leftSortedByY = new ArrayList<>(leftList);
         leftSortedByY.sort(BY_Y);
         Node left = buildNode(leftList);
@@ -88,6 +89,9 @@ public class RangeTreeSearch extends RangeSearch {
         int fromY = Math.min(point1.y, point2.y);
         int toY = Math.max(point1.y, point2.y);
         Node vSplit = findSplitNode(fromX, toX, tree);
+        if (vSplit == null) {
+            return emptyList();
+        }
         Integer yStartIndex = getAssocIndex(vSplit.getAssoc(), new AssocPoint(new Point(-1, fromY), null, null));
         if (vSplit.isLeaf() && yStartIndex != null) {
             return singletonList(vSplit.getAssoc().get(0).getPoint());
@@ -100,11 +104,11 @@ public class RangeTreeSearch extends RangeSearch {
         List<Point> result = new ArrayList<>();
         subtrees.forEach(pair -> {
             List<AssocPoint> list = pair.getFirst();
-            Integer firstIndex = pair.getSecond();
-            if (firstIndex != null) {
-                Point point = list.get(firstIndex).getPoint();
-                while (point.y <= toY) {
-                    result.add(point);
+            Integer index = pair.getSecond();
+            if (index != null) {
+                while (index < list.size() && list.get(index).getPoint().y <= toY) {
+                    result.add(list.get(index).getPoint());
+                    ++index;
                 }
             }
         });
@@ -124,7 +128,9 @@ public class RangeTreeSearch extends RangeSearch {
         }
         AssocPoint currentPoint = node.getAssoc().get(assocIndex);
         if (toX > node.getxCoord()) {
-            subtrees.add(new Pair<>(node.getLeft().getAssoc(), currentPoint.getLeftIndex()));
+            if (node.getLeft() != null) { // almost never happen
+                subtrees.add(new Pair<>(node.getLeft().getAssoc(), currentPoint.getLeftIndex()));
+            }
             traverseToRight(node.getRight(), toX, currentPoint.getRightIndex(), subtrees);
         } else {
             traverseToRight(node.getLeft(), toX, currentPoint.getLeftIndex(), subtrees);
@@ -146,7 +152,9 @@ public class RangeTreeSearch extends RangeSearch {
         }
         AssocPoint currentPoint = node.getAssoc().get(assocIndex);
         if (fromX <= node.getxCoord()) {
-            subtrees.add(new Pair<>(node.getRight().getAssoc(), currentPoint.getRightIndex()));
+            if (node.getRight() != null) {
+                subtrees.add(new Pair<>(node.getRight().getAssoc(), currentPoint.getRightIndex()));
+            }
             traverseToLeft(node.getLeft(), fromX, currentPoint.getLeftIndex(), subtrees);
         } else {
             traverseToLeft(node.getRight(), fromX, currentPoint.getRightIndex(), subtrees);
@@ -154,6 +162,9 @@ public class RangeTreeSearch extends RangeSearch {
     }
 
     private Node findSplitNode(int fromX, int toX, Node tree) {
+        if (tree == null) {
+            return null;
+        }
         if (fromX <= tree.getxCoord() && toX > tree.getxCoord()) {
             return tree;
         }

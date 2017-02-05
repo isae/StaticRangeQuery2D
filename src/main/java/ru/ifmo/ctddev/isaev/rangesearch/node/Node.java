@@ -2,6 +2,7 @@ package ru.ifmo.ctddev.isaev.rangesearch.node;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 
 /**
@@ -41,5 +42,12 @@ public class Node {
 
     public List<AssocPoint> getAssoc() {
         return assoc;
+    }
+
+    @Override
+    public String toString() {
+        StringJoiner result = new StringJoiner(" , ", "", "");
+        assoc.forEach(point -> result.add(point.toString()));
+        return result.toString();
     }
 }
