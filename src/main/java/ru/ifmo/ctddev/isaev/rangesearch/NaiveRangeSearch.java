@@ -24,7 +24,7 @@ public class NaiveRangeSearch extends RangeSearch {
                 .filter(p -> p.x > fromX && p.y > fromY && p.x < toX && p.y < toY)
                 .collect(Collectors.toList());
         long to = System.currentTimeMillis();
-        System.out.println(String.format("Spent %s milliseconds", to - from));
+        System.out.println(String.format("Naive: spent %s milliseconds", to - from));
         return result;
     }
 }

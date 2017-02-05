@@ -1,5 +1,6 @@
 package ru.ifmo.ctddev.isaev;
 
+import ru.ifmo.ctddev.isaev.rangesearch.NaiveRangeSearch;
 import ru.ifmo.ctddev.isaev.rangesearch.RangeSearch;
 import ru.ifmo.ctddev.isaev.rangesearch.RangeTreeSearch;
 import ru.ifmo.ctddev.isaev.rangesearch.node.Rect;
@@ -21,7 +22,7 @@ public class LiveDemo extends JFrame {
 
     private static final int POINT_SIZE = 5;
 
-    private static int numberOfPoints = 50000;
+    private static int numberOfPoints = 500;
 
     private static final Random random = new Random();
 
@@ -39,6 +40,8 @@ public class LiveDemo extends JFrame {
 
     private RangeSearch rangeSearch;
 
+    private NaiveRangeSearch naiveSearch;
+
     static {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         screenWidth = (int) screenSize.getWidth();
@@ -53,6 +56,7 @@ public class LiveDemo extends JFrame {
         bluePoints.clear();
         redPoints.addAll(points);
         rangeSearch = new RangeTreeSearch(redPoints);
+        naiveSearch = new NaiveRangeSearch(redPoints);
     }
 
     public LiveDemo() {
@@ -121,6 +125,7 @@ public class LiveDemo extends JFrame {
                 bluePoints.clear();
                 try {
                     bluePoints.addAll(rangeSearch.query(startDrag[0], endDrag[0], POINT_SIZE));
+                    naiveSearch.query(startDrag[0], endDrag[0], POINT_SIZE);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

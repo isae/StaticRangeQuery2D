@@ -114,7 +114,7 @@ public class RangeTreeSearch extends RangeSearch {
             }
         });
         long to = System.currentTimeMillis();
-        System.out.println(String.format("Spent %s milliseconds", to - from));
+        System.out.println(String.format("Range tree: spent %s milliseconds", to - from));
         return result;
     }
 
