@@ -14,5 +14,5 @@ public abstract class RangeSearch {
         this.points = points;
     }
 
-    public abstract List<Point> query(Point topLeft, Point bottomRight);
+    public abstract List<Point> query(Point topLeft, Point bottomRight, int pointSize);
 }

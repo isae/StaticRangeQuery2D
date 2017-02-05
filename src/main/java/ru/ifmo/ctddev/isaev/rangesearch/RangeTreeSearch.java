@@ -1,9 +1,6 @@
 package ru.ifmo.ctddev.isaev.rangesearch;
 
-import ru.ifmo.ctddev.isaev.rangesearch.node.AssocPoint;
-import ru.ifmo.ctddev.isaev.rangesearch.node.Leaf;
-import ru.ifmo.ctddev.isaev.rangesearch.node.Node;
-import ru.ifmo.ctddev.isaev.rangesearch.node.Pair;
+import ru.ifmo.ctddev.isaev.rangesearch.node.*;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -82,11 +79,13 @@ public class RangeTreeSearch extends RangeSearch {
     }
 
     @Override
-    public List<Point> query(Point point1, Point point2) {
-        int fromX = Math.min(point1.x, point2.x);
-        int toX = Math.max(point1.x, point2.x);
-        int fromY = Math.min(point1.y, point2.y);
-        int toY = Math.max(point1.y, point2.y);
+    public List<Point> query(Point point1, Point point2, int topBias) {
+        long from = System.currentTimeMillis();
+        Rect rect = new Rect(point1, point2);
+        int fromX = rect.getFromX() - topBias;
+        int toX = rect.getToX();
+        int fromY = rect.getFromY() - topBias;
+        int toY = rect.getToY();
         Node vSplit = findSplitNode(fromX, toX, tree);
         if (vSplit == null) {
             return emptyList();
@@ -94,6 +93,9 @@ public class RangeTreeSearch extends RangeSearch {
         Integer yStartIndex = getAssocIndex(vSplit.getAssoc(), new AssocPoint(new Point(-1, fromY), null, null));
         if (vSplit.isLeaf() && yStartIndex != null) {
             return singletonList(vSplit.getAssoc().get(0).getPoint());
+        }
+        if (yStartIndex == null) {
+            return emptyList();
         }
 
         AssocPoint parentPoint = vSplit.getAssoc().get(yStartIndex);
@@ -111,6 +113,8 @@ public class RangeTreeSearch extends RangeSearch {
                 }
             }
         });
+        long to = System.currentTimeMillis();
+        System.out.println(String.format("Spent %s milliseconds", to - from));
         return result;
     }
 

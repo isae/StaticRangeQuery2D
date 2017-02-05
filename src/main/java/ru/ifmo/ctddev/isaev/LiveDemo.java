@@ -2,6 +2,7 @@ package ru.ifmo.ctddev.isaev;
 
 import ru.ifmo.ctddev.isaev.rangesearch.RangeSearch;
 import ru.ifmo.ctddev.isaev.rangesearch.RangeTreeSearch;
+import ru.ifmo.ctddev.isaev.rangesearch.node.Rect;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,8 +10,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Rectangle2D;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -19,7 +21,7 @@ public class LiveDemo extends JFrame {
 
     private static final int POINT_SIZE = 5;
 
-    private static final int POINTS_NUMBER = 30;
+    private static final int POINTS_NUMBER = 50000;
 
     private static final Random random = new Random();
 
@@ -47,13 +49,9 @@ public class LiveDemo extends JFrame {
         List<Point> points = IntStream.range(0, POINTS_NUMBER)
                 .mapToObj(i -> new Point(random.nextInt(screenWidth), random.nextInt(screenHeight)))
                 .collect(Collectors.toList());
-        Set<Point> xSet = new TreeSet<>(Comparator.comparingInt(point -> point.x));
-        xSet.addAll(points);
-        Set<Point> ySet = new TreeSet<>(Comparator.comparingInt(point -> point.y));
-        ySet.addAll(xSet);
         redPoints.clear();
         bluePoints.clear();
-        redPoints.addAll(ySet);
+        redPoints.addAll(points);
         rangeSearch = new RangeTreeSearch(redPoints);
     }
 
@@ -63,18 +61,18 @@ public class LiveDemo extends JFrame {
     }
 
     void drawPoint(Graphics g, Point p, Color color) {
-        Graphics pointEnclosure = g.create(
+       /* Graphics pointEnclosure = g.create(
                 p.x - 3 * POINT_SIZE,
                 p.y - 3 * POINT_SIZE,
                 POINT_SIZE * 7,
-                POINT_SIZE * 7);
-        pointEnclosure.setColor(Color.BLACK);
-        pointEnclosure.setFont(new Font("Arial", Font.PLAIN, 8));
+                POINT_SIZE * 7);*/
+       /* pointEnclosure.setColor(Color.BLACK);
+        pointEnclosure.setFont(new Font("Arial", Font.PLAIN, 8));*/
         Graphics point = g.create(p.x, p.y, POINT_SIZE, POINT_SIZE);
         point.drawOval(0, 0, POINT_SIZE, POINT_SIZE);
         point.setColor(color);
         point.fillOval(0, 0, POINT_SIZE, POINT_SIZE);
-        pointEnclosure.drawString(String.format("%s/%s", p.x, p.y), 0, POINT_SIZE * 5 / 2);
+        //pointEnclosure.drawString(String.format("%s/%s", p.x, p.y), 0, POINT_SIZE * 5 / 2);
     }
 
     private Rectangle2D.Float makeRectangle(int x1, int y1, int x2, int y2) {
@@ -91,27 +89,28 @@ public class LiveDemo extends JFrame {
                 bluePoints.forEach(p -> drawPoint(g, p, Color.BLUE));
                 if (startDrag[0] != null && endDrag[0] != null) {
                     g2d.setPaint(Color.GREEN);
-                    Shape r = makeRectangle(startDrag[0].x, startDrag[0].y, endDrag[0].x, endDrag[0].y);
-                    g2d.draw(r);
+                    Rect rect = new Rect(startDrag[0], endDrag[0]);
+                    g2d.drawRect(rect.getFromX(), rect.getFromY(), rect.getWidth(), rect.getHeight());
                 }
             }
+
         };
         JButton generateButton = new JButton("Refresh");
         generateButton.addActionListener(e -> {
             generatePoints();
             repaint();
         });
-        mainPanel.add(generateButton);
+        //mainPanel.add(generateButton);
         this.add(mainPanel);
 
         mainPanel.setBackground(new java.awt.Color(255, 255, 255));
         mainPanel.setBorder(BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         mainPanel.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent evt) {
-                startDrag[0] = null;
-                endDrag[0] = null;
                 bluePoints.clear();
                 repaint();
+                startDrag[0] = null;
+                endDrag[0] = null;
                 startDrag[0] = new Point(evt.getX(), evt.getY());
                 endDrag[0] = startDrag[0];
                 repaint();
@@ -121,7 +120,7 @@ public class LiveDemo extends JFrame {
             public void mouseReleased(MouseEvent evt) {
                 bluePoints.clear();
                 try {
-                    bluePoints.addAll(rangeSearch.query(startDrag[0], endDrag[0]));
+                    bluePoints.addAll(rangeSearch.query(startDrag[0], endDrag[0], POINT_SIZE));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
