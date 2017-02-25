@@ -73,7 +73,6 @@ public class NaiveVsRangeTreeTest {
         }
     }
 
-
     private final MyPoint point1;
 
     private final MyPoint point2;
