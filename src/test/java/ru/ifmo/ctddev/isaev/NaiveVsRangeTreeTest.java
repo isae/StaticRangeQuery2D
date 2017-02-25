@@ -16,7 +16,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -88,9 +87,11 @@ public class NaiveVsRangeTreeTest {
         Set<MyPoint> rangeTreeResultSet = new HashSet<>(rangeTreeResult);
         assertEquals("All naive algorithm results are unique", naiveResult.size(), naiveResultSet.size());
         assertEquals("All range tree results are unique", rangeTreeResult.size(), rangeTreeResultSet.size());
-        assertTrue("Naive result is subset of a range result", rangeTreeResultSet.containsAll(naiveResultSet));
+        Set<MyPoint> naiveCopy = new HashSet<>(naiveResultSet);
+        naiveCopy.removeAll(rangeTreeResultSet);
+        assertEquals("Naive result is subset of a range result " + Arrays.toString(naiveCopy.toArray()), 0, naiveCopy.size());
         rangeTreeResultSet.removeAll(naiveResultSet);
         assertEquals("Naive and range tree results are equal: " + Arrays.toString(rangeTreeResultSet.toArray()), 0, rangeTreeResultSet.size());
     }
-    
+
 }
