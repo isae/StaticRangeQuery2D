@@ -20,7 +20,7 @@ public class NaiveRangeSearch extends RangeSearch {
         int fromY = Math.min(point1.y, point2.y);
         int toY = Math.max(point1.y, point2.y);
         List<MyPoint> result = points.stream()
-                .filter(p -> p.x > fromX && p.y > fromY && p.x < toX && p.y < toY)
+                .filter(p -> p.x >= fromX && p.y >= fromY && p.x <= toX && p.y <= toY)
                 .collect(Collectors.toList());
         long to = System.currentTimeMillis();
         System.out.println(String.format("Naive: spent %s milliseconds", to - from));
