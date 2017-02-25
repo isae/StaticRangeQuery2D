@@ -1,25 +1,25 @@
 package ru.ifmo.ctddev.isaev.rangesearch.node;
 
-import java.awt.*;
+import ru.ifmo.ctddev.isaev.rangesearch.MyPoint;
 
 
 /**
  * @author iisaev
  */
 public class AssocPoint {
-    private final Point point;
+    private final MyPoint point;
 
     private final Integer leftIndex;
 
     private final Integer rightIndex;
 
-    public AssocPoint(Point point, Integer leftIndex, Integer rightIndex) {
+    public AssocPoint(MyPoint point, Integer leftIndex, Integer rightIndex) {
         this.point = point;
         this.leftIndex = leftIndex;
         this.rightIndex = rightIndex;
     }
 
-    public Point getPoint() {
+    public MyPoint getPoint() {
         return point;
     }
 

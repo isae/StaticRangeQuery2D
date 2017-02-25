@@ -1,6 +1,5 @@
 package ru.ifmo.ctddev.isaev.rangesearch;
 
-import java.awt.*;
 import java.util.List;
 
 
@@ -8,11 +7,11 @@ import java.util.List;
  * @author iisaev
  */
 public abstract class RangeSearch {
-    protected final java.util.List<Point> points;
+    protected final List<MyPoint> points;
 
-    protected RangeSearch(List<Point> points) {
+    protected RangeSearch(List<MyPoint> points) {
         this.points = points;
     }
 
-    public abstract List<Point> query(Point topLeft, Point bottomRight, int pointSize);
+    public abstract List<MyPoint> query(MyPoint topLeft, MyPoint bottomRight, int topBias);
 }

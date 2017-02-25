@@ -2,7 +2,6 @@ package ru.ifmo.ctddev.isaev.rangesearch;
 
 import ru.ifmo.ctddev.isaev.rangesearch.node.*;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,14 +17,14 @@ import static ru.ifmo.ctddev.isaev.util.PointComparators.*;
 public class RangeTreeSearch extends RangeSearch {
     private Node tree;
 
-    public RangeTreeSearch(List<Point> points) {
+    public RangeTreeSearch(List<MyPoint> points) {
         super(points);
         points.sort(BY_X);
         tree = buildNode(points);
         boolean f = false;
     }
 
-    private Node buildNode(List<Point> points) {
+    private Node buildNode(List<MyPoint> points) {
         if (points.size() > 1) {
             return buildComplexNode(points);
         } else {
@@ -33,20 +32,20 @@ public class RangeTreeSearch extends RangeSearch {
         }
     }
 
-    private Node buildComplexNode(List<Point> points) {
-        List<Point> sortedByY = new ArrayList<>(points);
+    private Node buildComplexNode(List<MyPoint> points) {
+        List<MyPoint> sortedByY = new ArrayList<>(points);
         sortedByY.sort(BY_Y);
 
         int medianIndex = points.size() / 2;
         int leftSize = medianIndex + points.size() % 2;
-        Point median = points.get(medianIndex);
-        List<Point> leftList = points.subList(0, leftSize);
-        List<Point> leftSortedByY = new ArrayList<>(leftList);
+        MyPoint median = points.get(medianIndex);
+        List<MyPoint> leftList = points.subList(0, leftSize);
+        List<MyPoint> leftSortedByY = new ArrayList<>(leftList);
         leftSortedByY.sort(BY_Y);
         Node left = buildNode(leftList);
 
-        List<Point> rightList = points.subList(leftSize, points.size());
-        List<Point> rightSortedByY = new ArrayList<>(rightList);
+        List<MyPoint> rightList = points.subList(leftSize, points.size());
+        List<MyPoint> rightSortedByY = new ArrayList<>(rightList);
         rightSortedByY.sort(BY_Y);
         Node right = buildNode(rightList);
 
@@ -66,7 +65,7 @@ public class RangeTreeSearch extends RangeSearch {
         return new Node(left, right, median.x, assoc);
     }
 
-    private Integer getAssocIndex(List<Point> leftSortedByY, Point point) {
+    private Integer getAssocIndex(List<MyPoint> leftSortedByY, MyPoint point) {
         int pos = Collections.binarySearch(leftSortedByY, point, BY_Y);
         int res = pos >= 0 ? pos : -pos - 1;
         return res == leftSortedByY.size() ? null : res;
@@ -79,7 +78,7 @@ public class RangeTreeSearch extends RangeSearch {
     }
 
     @Override
-    public List<Point> query(Point point1, Point point2, int topBias) {
+    public List<MyPoint> query(MyPoint point1, MyPoint point2, int topBias) {
         long from = System.currentTimeMillis();
         Rect rect = new Rect(point1, point2);
         int fromX = rect.getFromX() - topBias;
@@ -90,7 +89,7 @@ public class RangeTreeSearch extends RangeSearch {
         if (vSplit == null) {
             return emptyList();
         }
-        Integer yStartIndex = getAssocIndex(vSplit.getAssoc(), new AssocPoint(new Point(-1, fromY), null, null));
+        Integer yStartIndex = getAssocIndex(vSplit.getAssoc(), new AssocPoint(new MyPoint(-1, fromY), null, null));
         if (vSplit.isLeaf() && yStartIndex != null) {
             return singletonList(vSplit.getAssoc().get(0).getPoint());
         }
@@ -102,7 +101,7 @@ public class RangeTreeSearch extends RangeSearch {
         List<Pair<List<AssocPoint>, Integer>> subtrees = new ArrayList<>();
         traverseToLeft(vSplit.getLeft(), fromX, parentPoint.getLeftIndex(), subtrees);
         traverseToRight(vSplit.getRight(), toX, parentPoint.getRightIndex(), subtrees);
-        List<Point> result = new ArrayList<>();
+        List<MyPoint> result = new ArrayList<>();
         subtrees.forEach(pair -> {
             List<AssocPoint> list = pair.getFirst();
             Integer index = pair.getSecond();

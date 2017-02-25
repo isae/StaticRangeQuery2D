@@ -1,9 +1,11 @@
 package ru.ifmo.ctddev.isaev;
 
+import ru.ifmo.ctddev.isaev.rangesearch.MyPoint;
 import ru.ifmo.ctddev.isaev.rangesearch.NaiveRangeSearch;
 import ru.ifmo.ctddev.isaev.rangesearch.RangeSearch;
 import ru.ifmo.ctddev.isaev.rangesearch.RangeTreeSearch;
 import ru.ifmo.ctddev.isaev.rangesearch.node.Rect;
+import ru.ifmo.ctddev.isaev.util.PointsGenerator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,9 +15,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 
 public class LiveDemo extends JFrame {
@@ -24,19 +24,17 @@ public class LiveDemo extends JFrame {
 
     private static int numberOfPoints = 500;
 
-    private static final Random random = new Random();
-
     private static final int screenWidth;
 
     private static final int screenHeight;
 
-    private final Point[] startDrag = new Point[1];
+    private final MyPoint[] startDrag = new MyPoint[1];
 
-    private final Point[] endDrag = new Point[1];
+    private final MyPoint[] endDrag = new MyPoint[1];
 
-    private final List<Point> redPoints = new ArrayList<>();
+    private final List<MyPoint> redPoints = new ArrayList<>();
 
-    private final List<Point> bluePoints = new ArrayList<>();
+    private final List<MyPoint> bluePoints = new ArrayList<>();
 
     private RangeSearch rangeSearch;
 
@@ -49,22 +47,25 @@ public class LiveDemo extends JFrame {
     }
 
     private void generatePoints() {
-        List<Point> points = IntStream.range(0, numberOfPoints)
-                .mapToObj(i -> new Point(random.nextInt(screenWidth), random.nextInt(screenHeight)))
-                .collect(Collectors.toList());
+
         redPoints.clear();
         bluePoints.clear();
-        redPoints.addAll(points);
+        redPoints.addAll(
+                new PointsGenerator(screenWidth, screenHeight)
+                        .take(numberOfPoints)
+                        .stream()
+                        .collect(Collectors.toList())
+        );
         rangeSearch = new RangeTreeSearch(redPoints);
         naiveSearch = new NaiveRangeSearch(redPoints);
     }
 
-    public LiveDemo() {
+    private LiveDemo() {
         initComponents();
         generatePoints();
     }
 
-    void drawPoint(Graphics g, Point p, Color color) {
+    private void drawPoint(Graphics g, MyPoint p, Color color) {
        /* Graphics pointEnclosure = g.create(
                 p.x - 3 * POINT_SIZE,
                 p.y - 3 * POINT_SIZE,
@@ -115,7 +116,7 @@ public class LiveDemo extends JFrame {
                 repaint();
                 startDrag[0] = null;
                 endDrag[0] = null;
-                startDrag[0] = new Point(evt.getX(), evt.getY());
+                startDrag[0] = new MyPoint(evt.getX(), evt.getY());
                 endDrag[0] = startDrag[0];
                 repaint();
             }
@@ -134,13 +135,12 @@ public class LiveDemo extends JFrame {
         });
         mainPanel.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent evt) {
-                endDrag[0] = new Point(evt.getX(), evt.getY());
+                endDrag[0] = new MyPoint(evt.getX(), evt.getY());
                 repaint();
             }
         });
     }
 
-    //set ui visible//
     public static void main(String args[]) {
         if (args.length > 0) {
             numberOfPoints = Integer.parseInt(args[0]);
