@@ -81,8 +81,8 @@ public class NaiveVsRangeTreeTest {
     public void test() {
         List<MyPoint> naiveResult = naiveRangeSearch.query(point1, point2, 0);
         List<MyPoint> rangeTreeResult = rangeTreeSearch.query(point1, point2, 0);
-        System.out.format("Point 1: %s, Point 2: %s\n", point1, point2);
-        System.out.format("Query: %s\n", getQuery());
+        System.out.format("Point 1: %s, Point 2: %s%n", point1, point2);
+        System.out.format("Query: %s%n", getQuery());
         Set<MyPoint> naiveResultSet = new HashSet<>(naiveResult);
         Set<MyPoint> rangeTreeResultSet = new HashSet<>(rangeTreeResult);
         assertEquals("All naive algorithm results are unique", naiveResult.size(), naiveResultSet.size());

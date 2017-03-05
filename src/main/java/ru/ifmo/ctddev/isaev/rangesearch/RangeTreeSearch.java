@@ -58,11 +58,6 @@ public class RangeTreeSearch extends RangeSearch {
         });
 
         assoc.sort(BY_Y);
-        if (left.getAssoc().size() + right.getAssoc().size() != assoc.size()) {
-            boolean f = true;
-            throw new IllegalStateException();
-        }
-
         return new Node(left, right, median.x, assoc);
     }
 
@@ -74,7 +69,6 @@ public class RangeTreeSearch extends RangeSearch {
 
     @Override
     public List<MyPoint> query(MyPoint point1, MyPoint point2, int topBias) {
-        long from = System.currentTimeMillis();
         Rect rect = new Rect(point1, point2);
         int fromX = rect.getFromX() - topBias;
         int toX = rect.getToX();
@@ -111,8 +105,6 @@ public class RangeTreeSearch extends RangeSearch {
                 }
             }
         });
-        long to = System.currentTimeMillis();
-        System.out.println(String.format("Range tree: spent %s milliseconds", to - from));
         return result;
     }
 
