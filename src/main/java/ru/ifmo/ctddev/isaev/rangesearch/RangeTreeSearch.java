@@ -8,7 +8,8 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static ru.ifmo.ctddev.isaev.util.PointComparators.*;
+import static ru.ifmo.ctddev.isaev.util.PointComparators.BY_X;
+import static ru.ifmo.ctddev.isaev.util.PointComparators.BY_Y;
 
 
 /**
@@ -56,7 +57,7 @@ public class RangeTreeSearch extends RangeSearch {
             assoc.add(new AssocPoint(point, leftIndex, rightIndex));
         });
 
-        assoc.sort(ASSOC_BY_Y);
+        assoc.sort(BY_Y);
         if (left.getAssoc().size() + right.getAssoc().size() != assoc.size()) {
             boolean f = true;
             throw new IllegalStateException();
@@ -65,16 +66,10 @@ public class RangeTreeSearch extends RangeSearch {
         return new Node(left, right, median.x, assoc);
     }
 
-    private Integer getAssocIndex(List<MyPoint> leftSortedByY, MyPoint point) {
+    private <T extends Point2D> Integer getAssocIndex(List<T> leftSortedByY, T point) {
         int pos = Collections.binarySearch(leftSortedByY, point, BY_Y);
         int res = pos >= 0 ? pos : -pos - 1;
-        return res == leftSortedByY.size() ? null : res;
-    }
-
-    private Integer getAssocIndex(List<AssocPoint> leftSortedByY, AssocPoint point) {
-        int pos = Collections.binarySearch(leftSortedByY, point, ASSOC_BY_Y);
-        int res = pos >= 0 ? pos : -pos - 1;
-        return res == leftSortedByY.size() ? null : res;
+        return res == leftSortedByY.size() ? null : res == 0 ? res : res - 1;
     }
 
     @Override
@@ -106,6 +101,9 @@ public class RangeTreeSearch extends RangeSearch {
             List<AssocPoint> list = pair.getFirst();
             Integer index = pair.getSecond();
             if (index != null) {
+                while (index < list.size() && list.get(index).getPoint().y < fromY) {
+                    ++index;
+                }
                 while (index < list.size() && list.get(index).getPoint().y <= toY) {
                     MyPoint pointToAdd = list.get(index).getPoint();
                     result.add(pointToAdd);

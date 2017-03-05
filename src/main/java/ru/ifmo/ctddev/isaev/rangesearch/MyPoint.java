@@ -1,12 +1,14 @@
 package ru.ifmo.ctddev.isaev.rangesearch;
 
+import ru.ifmo.ctddev.isaev.rangesearch.node.Point2D;
+
 import java.util.Objects;
 
 
 /**
  * @author iisaev
  */
-public class MyPoint {
+public class MyPoint implements Point2D {
     public final int x;
 
     public final int y;
@@ -37,5 +39,15 @@ public class MyPoint {
     @Override
     public String toString() {
         return "(" + x + " " + y + ")";
+    }
+
+    @Override
+    public int getX() {
+        return x;
+    }
+
+    @Override
+    public int getY() {
+        return y;
     }
 }

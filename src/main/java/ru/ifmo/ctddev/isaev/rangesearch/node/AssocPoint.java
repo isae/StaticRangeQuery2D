@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * @author iisaev
  */
-public class AssocPoint {
+public class AssocPoint implements Point2D {
     private final MyPoint point;
 
     private final Integer leftIndex;
@@ -53,5 +53,15 @@ public class AssocPoint {
     @Override
     public int hashCode() {
         return Objects.hash(point);
+    }
+
+    @Override
+    public int getX() {
+        return point.x;
+    }
+
+    @Override
+    public int getY() {
+        return point.y;
     }
 }

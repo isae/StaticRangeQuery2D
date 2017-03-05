@@ -89,9 +89,9 @@ public class NaiveVsRangeTreeTest {
         assertEquals("All range tree results are unique", rangeTreeResult.size(), rangeTreeResultSet.size());
         Set<MyPoint> naiveCopy = new HashSet<>(naiveResultSet);
         naiveCopy.removeAll(rangeTreeResultSet);
-        assertEquals("Not present in result" + Arrays.toString(naiveCopy.toArray()), 0, naiveCopy.size());
+        assertEquals("Not present in range result" + Arrays.toString(naiveCopy.toArray()), 0, naiveCopy.size());
         rangeTreeResultSet.removeAll(naiveResultSet);
-        //   assertEquals("Naive and range tree results are equal: " + Arrays.toString(rangeTreeResultSet.toArray()), 0, rangeTreeResultSet.size());
+        assertEquals("Naive and range tree results are equal" + Arrays.toString(rangeTreeResultSet.toArray()), 0, rangeTreeResultSet.size());
     }
 
     private String getQuery() {
