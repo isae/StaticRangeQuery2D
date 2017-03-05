@@ -82,15 +82,23 @@ public class NaiveVsRangeTreeTest {
         List<MyPoint> naiveResult = naiveRangeSearch.query(point1, point2, 0);
         List<MyPoint> rangeTreeResult = rangeTreeSearch.query(point1, point2, 0);
         System.out.format("Point 1: %s, Point 2: %s\n", point1, point2);
+        System.out.format("Query: %s\n", getQuery());
         Set<MyPoint> naiveResultSet = new HashSet<>(naiveResult);
         Set<MyPoint> rangeTreeResultSet = new HashSet<>(rangeTreeResult);
         assertEquals("All naive algorithm results are unique", naiveResult.size(), naiveResultSet.size());
         assertEquals("All range tree results are unique", rangeTreeResult.size(), rangeTreeResultSet.size());
         Set<MyPoint> naiveCopy = new HashSet<>(naiveResultSet);
         naiveCopy.removeAll(rangeTreeResultSet);
-        assertEquals("Naive result is subset of a range result " + Arrays.toString(naiveCopy.toArray()), 0, naiveCopy.size());
+        assertEquals("Not present in result" + Arrays.toString(naiveCopy.toArray()), 0, naiveCopy.size());
         rangeTreeResultSet.removeAll(naiveResultSet);
-     //   assertEquals("Naive and range tree results are equal: " + Arrays.toString(rangeTreeResultSet.toArray()), 0, rangeTreeResultSet.size());
+        //   assertEquals("Naive and range tree results are equal: " + Arrays.toString(rangeTreeResultSet.toArray()), 0, rangeTreeResultSet.size());
     }
 
+    private String getQuery() {
+        int xMin = Math.min(point1.x, point2.x);
+        int xMax = Math.max(point1.x, point2.x);
+        int yMin = Math.min(point1.y, point2.y);
+        int yMax = Math.max(point1.y, point2.y);
+        return String.format("(%s..%s,%s..%s)", xMin, xMax, yMin, yMax);
+    }
 }

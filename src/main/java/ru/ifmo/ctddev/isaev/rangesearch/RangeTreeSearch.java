@@ -107,7 +107,8 @@ public class RangeTreeSearch extends RangeSearch {
             Integer index = pair.getSecond();
             if (index != null) {
                 while (index < list.size() && list.get(index).getPoint().y <= toY) {
-                    result.add(list.get(index).getPoint());
+                    MyPoint pointToAdd = list.get(index).getPoint();
+                    result.add(pointToAdd);
                     ++index;
                 }
             }
@@ -129,9 +130,13 @@ public class RangeTreeSearch extends RangeSearch {
             return;
         }
         AssocPoint currentPoint = node.getAssoc().get(assocIndex);
-        if (toX > node.getxCoord()) {
+        if (toX >= node.getxCoord()) {
             if (node.getLeft() != null) { // almost never happen
-                subtrees.add(new Pair<>(node.getLeft().getAssoc(), currentPoint.getLeftIndex()));
+                Integer leftIndex = currentPoint.getLeftIndex();
+                if (leftIndex != null && leftIndex > 0) {
+                    leftIndex -= 1;
+                }
+                subtrees.add(new Pair<>(node.getLeft().getAssoc(), leftIndex));
             }
             traverseToRight(node.getRight(), toX, currentPoint.getRightIndex(), subtrees);
         } else {
@@ -155,7 +160,11 @@ public class RangeTreeSearch extends RangeSearch {
         AssocPoint currentPoint = node.getAssoc().get(assocIndex);
         if (fromX <= node.getxCoord()) {
             if (node.getRight() != null) {
-                subtrees.add(new Pair<>(node.getRight().getAssoc(), currentPoint.getRightIndex()));
+                Integer rightIndex = currentPoint.getRightIndex();
+                if (rightIndex != null && rightIndex > 0) {
+                    rightIndex -= 1;
+                }
+                subtrees.add(new Pair<>(node.getRight().getAssoc(), rightIndex));
             }
             traverseToLeft(node.getLeft(), fromX, currentPoint.getLeftIndex(), subtrees);
         } else {

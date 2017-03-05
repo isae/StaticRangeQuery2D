@@ -2,6 +2,8 @@ package ru.ifmo.ctddev.isaev.rangesearch.node;
 
 import ru.ifmo.ctddev.isaev.rangesearch.MyPoint;
 
+import java.util.Objects;
+
 
 /**
  * @author iisaev
@@ -34,5 +36,22 @@ public class AssocPoint {
     @Override
     public String toString() {
         return String.format("[%s/%s],%s,%s", point.x, point.y, leftIndex, rightIndex);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AssocPoint that = (AssocPoint) o;
+        return Objects.equals(point, that.point);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(point);
     }
 }
